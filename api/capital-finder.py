@@ -6,6 +6,7 @@ import requests
 class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
+        """Handle the GET request, this is the main function of the script"""
 
         query_dict = self.query()
         response_code = 200
@@ -32,12 +33,14 @@ class handler(BaseHTTPRequestHandler):
         return
 
     def query(self):
+        """Parse the query string and return a dictionary of the query string"""
         s = self.path
         url_components = parse.urlsplit(s)
         query_strings_list = parse.parse_qsl(url_components.query)
         return dict(query_strings_list)
 
     def get_data_from_name(self, country):
+        """Get the country data from the name of the country"""
         resp = requests.get(f"https://restcountries.com/v3.1/name/{country}")
         try:
             data = resp.json()
@@ -46,6 +49,7 @@ class handler(BaseHTTPRequestHandler):
             raise TypeError("response data is not a country") from e
 
     def get_data_from_capital(self, capital):
+        """Get the country data from the capital of the country"""
         resp = requests.get(f"https://restcountries.com/v3.1/capital/{capital}")
         try:
             data = resp.json()
@@ -54,14 +58,17 @@ class handler(BaseHTTPRequestHandler):
             raise TypeError("response data is not a country") from e
 
     def generate_capital_resp(self, query_dict):
+        """Generate the response for the capital query"""
         country_data = self.get_data_from_capital(query_dict['capital'])
         return f"{query_dict['capital']} is the capital of {country_data['name']['common']}\n{self.generate_extra_country_data(country_data)}"
 
     def generate_country_resp(self, query_dict):
+        """Generate the response for the country query"""
         country_data = self.get_data_from_name(query_dict['country'])
         return f"Capital of {query_dict['country']} is {self.parse_country_capitals(country_data)}\n{self.generate_extra_country_data(country_data)}"
 
     def generate_matching_query_response(self, query_dict) -> str:
+        """Generate the response for the matching query"""
         country_from_name = self.get_data_from_name(query_dict['country'])
         capital = query_dict['capital'].capitalize()
         capitals = country_from_name['capital']
@@ -76,6 +83,7 @@ class handler(BaseHTTPRequestHandler):
         return ", ".join(capitals)
 
     def generate_extra_country_data(self, country: dict):
+        """Generate the extra data for the country, like the currency and the population"""
         currencies = country.get('currencies', {})
         currencies_str = ", ".join(f"{currency}, " for currency in currencies.keys())
 
