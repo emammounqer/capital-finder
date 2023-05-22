@@ -24,7 +24,7 @@ class handler(BaseHTTPRequestHandler):
             response_text = 'Country not found'
         except Exception as e:
             response_code = 500
-            response_text = "Something went wrong, please try again"
+            response_text = "`restcountries` api is down please try again later"
 
         self.send_response(response_code)
         self.send_header('Content-type', 'text/plain')
@@ -42,8 +42,8 @@ class handler(BaseHTTPRequestHandler):
     def get_data_from_name(self, country):
         """Get the country data from the name of the country"""
         resp = requests.get(f"https://restcountries.com/v3.1/name/{country}")
+        data = resp.json()
         try:
-            data = resp.json()
             return data[0]
         except Exception as e:
             raise TypeError("response data is not a country") from e
@@ -51,8 +51,8 @@ class handler(BaseHTTPRequestHandler):
     def get_data_from_capital(self, capital):
         """Get the country data from the capital of the country"""
         resp = requests.get(f"https://restcountries.com/v3.1/capital/{capital}")
+        data = resp.json()
         try:
-            data = resp.json()
             return data[0]
         except Exception as e:
             raise TypeError("response data is not a country") from e
