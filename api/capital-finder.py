@@ -20,9 +20,11 @@ class handler(BaseHTTPRequestHandler):
             elif 'capital' in query_dict:
                 response_text = self.generate_capital_resp(query_dict)
         except TypeError as e:
+            print(e)
             response_code = 404
             response_text = 'Country not found'
         except Exception as e:
+            print(e)
             response_code = 500
             response_text = "`restcountries` api is down please try again later"
 
@@ -42,8 +44,9 @@ class handler(BaseHTTPRequestHandler):
     def get_data_from_name(self, country):
         """Get the country data from the name of the country"""
         resp = requests.get(f"https://restcountries.com/v3.1/name/{country}")
-        data = resp.json()
+        resp.raise_for_status()
         try:
+            data = resp.json()
             return data[0]
         except Exception as e:
             raise TypeError("response data is not a country") from e
@@ -51,8 +54,9 @@ class handler(BaseHTTPRequestHandler):
     def get_data_from_capital(self, capital):
         """Get the country data from the capital of the country"""
         resp = requests.get(f"https://restcountries.com/v3.1/capital/{capital}")
-        data = resp.json()
+        resp.raise_for_status()
         try:
+            data = resp.json()
             return data[0]
         except Exception as e:
             raise TypeError("response data is not a country") from e
