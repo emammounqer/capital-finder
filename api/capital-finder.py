@@ -23,10 +23,18 @@ class handler(BaseHTTPRequestHandler):
             print(e)
             response_code = 404
             response_text = 'Country not found'
+        except requests.exceptions.HTTPError as e:
+            print(e)
+            if e.response.status_code == 404:
+                response_code = 404
+                response_text = 'Country not found'
+            else:
+                response_code = 500
+                response_text = '`restcountries` api is down please try again later'
         except Exception as e:
             print(e)
             response_code = 500
-            response_text = "`restcountries` api is down please try again later"
+            response_text = "something went wrong, please try again later"
 
         self.send_response(response_code)
         self.send_header('Content-type', 'text/plain')
